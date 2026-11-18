@@ -1,0 +1,6 @@
+insightface>=0.7.3
+onnxruntime>=1.18.0
+opencv-python-headless>=4.9.0
+flask>=3.0.0
+Pillow>=10.0.0
+numpy>=1.24.0

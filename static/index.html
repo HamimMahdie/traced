@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trace — Facial Recognition Photo Scanner</title>
+  <meta name="description" content="Scan directories of photos, find all pictures of a specific person using facial recognition, and copy matches to a new folder." />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- ── Header ──────────────────────────────────────────────────────── -->
+  <header>
+    <h1>Trace</h1>
+    <p>Upload reference photos, scan a folder, and find every picture of that person.</p>
+  </header>
+
+  <div class="panels">
+
+    <!-- ── 1. Reference Panel ──────────────────────────────────────── -->
+    <section class="panel" id="panel-reference">
+      <div class="panel-header">
+        <h2><span class="icon">👤</span> Reference Faces</h2>
+        <span class="badge" id="ref-count-badge">0</span>
+      </div>
+
+      <div class="drop-zone" id="drop-zone">
+        <span class="drop-icon">📸</span>
+        <p class="drop-text">
+          <strong>Click or drag & drop</strong> photos of the person you want to find.<br />
+          Multiple angles (front, side, top) improve accuracy.
+        </p>
+        <input type="file" id="ref-file-input" accept="image/jpeg,image/png,image/webp" multiple />
+      </div>
+
+      <div class="ref-grid" id="ref-grid"></div>
+
+      <div id="ref-status" class="status-msg"></div>
+
+      <div class="btn-row" style="margin-top: 14px;">
+        <button class="btn btn-outline" id="btn-clear-refs" disabled>Clear All</button>
+      </div>
+    </section>
+
+    <!-- ── 2. Scan Panel ───────────────────────────────────────────── -->
+    <section class="panel" id="panel-scan">
+      <div class="panel-header">
+        <h2><span class="icon">📂</span> Scan Directory</h2>
+      </div>
+
+      <div class="form-group">
+        <label for="scan-dir-input">Directory Path</label>
+        <input type="text" id="scan-dir-input" placeholder="/Users/you/Photos/Vacation2024" />
+      </div>
+
+      <div class="form-group">
+        <label>Similarity Threshold <span style="font-weight:400; color:var(--text-muted);">(higher = stricter match)</span></label>
+        <div class="slider-row">
+          <input type="range" id="threshold-slider" min="0.20" max="0.70" step="0.01" value="0.40" />
+          <span class="slider-value" id="threshold-value">0.40</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-scan" disabled>
+          <span>🔎</span> Start Scan
+        </button>
+        <button class="btn btn-outline" id="btn-stop-scan" style="display:none;">
+          <span>⏹</span> Stop
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-container" id="scan-progress">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-status">
+          <span id="progress-text">Scanning...</span>
+          <span id="progress-percent">0%</span>
+        </div>
+      </div>
+
+      <div id="scan-status" class="status-msg"></div>
+    </section>
+
+    <!-- ── 3. Results Panel ────────────────────────────────────────── -->
+    <section class="panel" id="panel-results" style="display: none;">
+      <div class="panel-header">
+        <h2><span class="icon">✅</span> Results</h2>
+      </div>
+
+      <div class="results-summary" id="results-summary">
+        <div class="stat">
+          <span class="stat-value" id="stat-matches">0</span>
+          <span class="stat-label">Matches</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="stat-total">0</span>
+          <span class="stat-label">Scanned</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="stat-accuracy">—</span>
+          <span class="stat-label">Hit Rate</span>
+        </div>
+      </div>
+
+      <h3 style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 8px;">Sample Matches</h3>
+      <div class="sample-grid" id="sample-grid"></div>
+
+      <!-- Copy section -->
+      <div class="copy-section">
+        <div class="form-group">
+          <label for="output-dir-input">Copy matches to directory <span style="font-weight:400; color:var(--text-muted);">(leave blank to save inside scanned folder as "Traced")</span></label>
+          <input type="text" id="output-dir-input" placeholder="Leave blank for default: [scan dir]/Traced" />
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-success" id="btn-copy">
+            <span>📁</span> Copy All Matches
+          </button>
+        </div>
+        <div id="copy-status" class="status-msg"></div>
+      </div>
+    </section>
+
+  </div><!-- /.panels -->
+
+</div><!-- /.app-container -->
+
+<!-- ── Image Preview Modal ─────────────────────────────────────────── -->
+<div class="preview-overlay" id="preview-overlay">
+  <button class="preview-close" id="preview-close">&times;</button>
+  <button class="preview-nav preview-prev" id="preview-prev">&#8249;</button>
+  <button class="preview-nav preview-next" id="preview-next">&#8250;</button>
+  <img class="preview-img" id="preview-img" alt="Full preview" />
+  <div class="preview-caption" id="preview-caption"></div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
